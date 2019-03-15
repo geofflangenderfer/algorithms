@@ -2,8 +2,8 @@ import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.StdRandom;
 
 public class PercolationStats {
-    private final int trials;
     private static final double CONFIDENCE_95 = 1.96;
+    private final int trials;
     private final double[] probs;
     public PercolationStats(int n, int trials)    // perform trials independent experiments on an n-by-n grid
     {
@@ -17,26 +17,23 @@ public class PercolationStats {
         // Monte Carlo
         for (int i = 0; i < trials; i++) {
             Percolation perc = new Percolation(n);
-            while (!perc.percolates()) {
-                // create array of randomized indices of sites in Percolation obj.
-                int[] sitesIndices = new int[n*n+2];
-                for (int j = 0; j < sitesIndices.length; j++) { 
-                    sitesIndices[j] = j;
-                }
-                StdRandom.shuffle(sitesIndices);
+            int[] sitesIndices = new int[n*n];
+            for (int j = 0; j < sitesIndices.length; j++) { 
+                sitesIndices[j] = j+1;
+            }
+            StdRandom.shuffle(sitesIndices);
 
-                    // open random site
-                for (int index : sitesIndices) {
-                
-                    int row = ((index - 1) / n) + 1;
-                    int col = ((index - 1) % n) + 1;
+            // open random site
+            for (int index : sitesIndices) {
+            
+                int row = ((index - 1) / n) + 1;
+                int col = ((index - 1) % n) + 1;
 
-                    if (perc.isOpen(row, col)) { 
-                        continue;
-                    }
-                    else {
-                        perc.open(row, col);
-                        break;
+                if (!perc.isOpen(row, col)) { 
+                    perc.open(row, col);
+                    // trying to get rid of the while loop
+                    if (perc.percolates()) { 
+                        break; 
                     }
                 }
             }
